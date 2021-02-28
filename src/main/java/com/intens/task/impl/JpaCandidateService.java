@@ -41,11 +41,27 @@ public class JpaCandidateService implements CandidateService {
 		return candidateRepository.findById(id);
 	}
 
+	
 	@Override
 	public Candidate save(Candidate candidate) {
+		List<Long> skillIdes=new ArrayList<>();
+		for (Skill skill:candidate.getSkills()) {
+			skillIdes.add(skill.getId());
+		}
+	if(candidate.getId()!=null) {
+		
+			candidateRepository.deleteRelatedSkills(candidate.getId());
+		
+	}
+	List<Skill> skills=new ArrayList<>();
+	for(Long id:skillIdes) {
+		skills.add(skillRepository.getOne(id));
+	}
+	candidate.setSkills(skills);
 		Candidate persisted = candidateRepository.save(candidate);
-		List<Skill> skills = candidate.getSkills();
-		for (Skill skill : skills) {
+		System.out.println("Skills +"+persisted.getSkills());
+		List<Skill> skills1 = candidate.getSkills();
+		for (Skill skill : skills1) {
 			Set<Candidate> candidates = new HashSet<>();
 			candidates = skill.getCandidatesWithSkill();
 			candidates.add(persisted);
@@ -55,6 +71,7 @@ public class JpaCandidateService implements CandidateService {
 		return persisted;
 
 	}
+
 
 	@Override
 	public Candidate delete(Long id) {
