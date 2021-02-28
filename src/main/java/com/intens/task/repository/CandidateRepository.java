@@ -13,7 +13,7 @@ import com.intens.task.model.Candidate;
 
 @Repository
 public interface CandidateRepository extends JpaRepository<Candidate, Long> {
-	//Fali mi uslov da iybegnem dupliranje
+	
 //	@Query(value="SELECT DESTINCT * FROM candidate, candidate_skills   WHERE "
 //	+"(candidate.id = candidate_skills.candidate_id) AND (?2 IS null OR candidate_skills.skills_id=?2) AND  (?1 IS NULL OR candidate.full_name=?1) ",nativeQuery = true)
 //@Query(value="Select * from candidate, candidate_skills where  "+
@@ -38,4 +38,12 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
 
 	List<Candidate> findByFullName(String fullName);
 
+	
+	@Modifying
+	@Transactional
+	@Query(value="delete from candidate_skills t0 where t0.candidate_id= ?1 ",nativeQuery = true)
+	void deleteRelatedSkills(@Param ("candidate_id") Long id);
+
+	
+}
 }
